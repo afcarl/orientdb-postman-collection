@@ -1,0 +1,550 @@
+{
+	"variables": [],
+	"info": {
+		"name": "OrientDB API Sample",
+		"_postman_id": "a0f06fcb-e37c-148a-fb49-b3cd1f75f18c",
+		"description": "OrientDB API SAMPLE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Allocation",
+			"description": "",
+			"item": [
+				{
+					"name": "GET - Allocation",
+					"request": {
+						"url": "http://{{server}}:{{port}}/allocation/{{database}}",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "GET - Allocation\n\nRetrieve information about the storage space of a disk-based database.\n\nSyntax: http://<server>:[<port>]/allocation/<database>\n\nExample\n\nHTTP GET request: http://localhost:2480/allocation/demo\n\nHTTP response: { \"size\": 61910, \"segments\": [ {\"type\": \"d\", \"offset\": 0, \"size\": 33154}, {\"type\": \"h\", \"offset\": 33154, \"size\": 4859}, {\"type\": \"h\", \"offset\": 3420, \"size\": 9392}, {\"type\": \"d\", \"offset\": 12812, \"size\": 49098} ], \"dataSize\": 47659, \"dataSizePercent\": 76, \"holesSize\": 14251, \"holesSizePercent\": 24 }"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Batch",
+			"description": "",
+			"item": [
+				{
+					"name": "POST - Batch",
+					"request": {
+						"url": "http://{{server}}:{{port}}/batch/{{database}}",
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "POST - Batch\n\nExecutes a batch of operations in a single call. This is useful to reduce network latency issuing multiple commands as multiple requests. Batch command supports transactions as well.\n\nSyntax: http://<server>:[<port>]/batch/<database>\n\nContent: { \"transaction\" : , \"operations\" : [ { \"type\" : \"\" }* ] }\n\nReturns: the result of last operation.\n\nWhere: type can be:\n\n'c' for create, 'record' field is expected.\n'u' for update, 'record' field is expected.\n'd' for delete. The '@rid' field only is needed.\n'cmd' for commands (Since v1.6). The expected fields are:\n\n'language', between those supported (sql, gremlin, script, etc.)\n'command' as the text of the command to execute\n'script' for scripts (Since v1.6). The expected fields are:\n\n'language', between the language installed in the JVM. Javascript is the default one, but you can also use SQL (see below)\n'script' as the text of the script to execute\nExample\n\n{ \"transaction\" : true,\n  \"operations\" : [\n    { \"type\" : \"u\",\n      \"record\" : {\n        \"@rid\" : \"#14:122\",\n        \"name\" : \"Luca\",\n        \"vehicle\" : \"Car\"\n      }\n    }, {\n      \"type\" : \"d\",\n      \"record\" : {\n        \"@rid\" : \"#14:100\"\n      }\n    }, {\n      \"type\" : \"c\",\n      \"record\" : {\n        \"@class\" : \"City\",\n        \"name\" : \"Venice\"\n      }\n    }, {\n      \"type\" : \"cmd\",\n      \"language\" : \"sql\",\n      \"command\" : \"create edge Friend from #10:33 to #11:33\"\n    }, {\n      \"type\" : \"script\",\n      \"language\" : \"javascript\",\n      \"script\" : \"orient.getGraph().createVertex('class:Account')\"\n    }\n  ]\n}\nSQL batch\n\n{ \"transaction\" : true,\n  \"operations\" : [\n    {\n      \"type\" : \"script\",\n      \"language\" : \"sql\",\n      \"script\" : [ \"LET account = CREATE VERTEX Account SET name = 'Luke'\",\n                   \"LET city = SELECT FROM City WHERE name = 'London'\",\n                   \"CREATE EDGE Lives FROM $account TO $city RETRY 100\" ]\n    }\n  ]\n}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Class",
+			"description": "",
+			"item": [
+				{
+					"name": "POST - Class",
+					"request": {
+						"url": "http://{{server}}:{{port}}/class/{{database}}/{{class}}",
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "POST - Class\n\nCreate a new class where the schema of the vertexes or edges is known. OrientDB allows (encourages) classes to be derived from other class definitions – this is achieved by using the COMMAND call with an OrientDB SQL command. Returns the id of the new class created.\n\nSyntax: http://<server>:[<port>]/class/<database>/<class-name>\n\nHTTP POST request: http://localhost:2480/class/demo/Address2 HTTP response: 9"
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Class",
+					"request": {
+						"url": "http://{{server}}:{{port}}/class/{{database}}/{{class}}",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "GET - Class\n\nGets informations about requested class.\n\nSyntax: http://<server>:[<port>]/class/<database>/<class-name>\n\nHTTP response:\n\n{ \"class\": {\n    \"name\": \"<class-name>\"\n    \"properties\": [\n      { \"name\": <property-name>,\n        \"type\": <property-type>,\n        \"mandatory\": <mandatory>,\n        \"notNull\": <not-null>,\n        \"min\": <min>,\n        \"max\": <max>\n      }\n    ]\n  }\n}\nFor more information about properties look at the supported types, or see the SQL Create property page for text values to be used when getting or posting class commands\n\nExample\n\nHTTP GET request: http://localhost:2480/class/demo/OFunction"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Class",
+					"request": {
+						"url": "http://{{server}}:{{port}}/class/{{database}}/{{class}}",
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cluster",
+			"description": "",
+			"item": [
+				{
+					"name": "GET - Cluster",
+					"request": {
+						"url": "http://{{server}}:{{port}}/cluster/{{database}}/{{cluster-name}}",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "GET - Cluster\n\nWhere the primary usage is a document db, or where the developer wants to optimise retrieval using the clustering of the database, use the CLUSTER command to browse the records of the requested cluster.\n\nSyntax: http://<server>:[<port>]/cluster/<database>/<cluster-name>/\n\nWhere <limit> is optional and tells the maximum of records to load. Default is 20.\n\nExample\n\nHTTP GET request: http://localhost:2480/cluster/demo/Address\n\nHTTP response:\n\n{ \"schema\": {\n    \"id\": 5,\n    \"name\": \"Address\"\n  },\n  \"result\": [{\n      \"_id\": \"11:0\",\n      \"_ver\": 0,\n      \"@class\": \"Address\",\n      \"type\": \"Residence\",\n      \"street\": \"Piazza Navona, 1\",\n      \"city\": \"12:0\"\n    }\n..."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Database",
+			"description": "",
+			"item": [
+				{
+					"name": "GET - Database",
+					"request": {
+						"url": "http://{{server}}:{{port}}/database/{{database}}",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "Database\n\nGET - Database\n\nHTTP GET request: http://localhost:2480/database/demo HTTP response:\n\n{\n  \"server\": {\n    \"version\": \"1.1.0-SNAPSHOT\",\n    \"osName\": \"Windows 7\",\n    \"osVersion\": \"6.1\",\n    \"osArch\": \"amd64\",\n    \"javaVendor\": \"Oracle Corporation\",\n    \"javaVersion\": \"23.0-b21\"\n  }, \"classes\": [],\n  ...\n}"
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Database",
+					"request": {
+						"url": "http://{{server}}:{{port}}/database/{{database}}/{{type}}",
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "POST - Database\n\nCreate a new database.\n\nSyntax: http://<server>:[<port>]/database/<database>/<type>\n\nHTTP POST request: http://localhost:2480/database/demo/plocal\n\nHTTP response: { \"classes\" : [], \"clusters\": [], \"users\": [], \"roles\": [], \"config\":[], \"properties\":{} }"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Database",
+					"request": {
+						"url": "http://{{server}}:{{port}}/database/{{database}}",
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "DELETE - Database\n\nDrop a database. Requires additional authentication to the server.\n\nSyntax: http://<server>:[<port>]/database/<databaseName>\n\nWhere:\n\ndatabaseName is the name of database\nExample\n\nHTTP DELETE request: http://localhost:2480/database/demo2 HTTP response code 204"
+					},
+					"response": []
+				},
+				{
+					"name": "GET - List Databases",
+					"request": {
+						"url": "http://{{server}}:{{port}}/listDatabases",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "GET - List Databases\n\nRetrieves the available databases.\n\nSyntax: http://<server>:<port>/listDatabases\n\nTo let to the Studio to display the database list by default the permission to list the database is assigned to guest. Remove this permission if you don't want anonymous user can display it.\n\nFor more details see Server Resources\n\nExample of configuration of \"guest\" server user: a15b5e6bb7d06bd5d6c35db97e51400b\n\nExample\n\nHTTP GET request: http://localhost:2480/listDatabases HTTP response:\n\n{\n  \"@type\": \"d\", \"@version\": 0,\n    \"databases\": [\"demo\", \"temp\"]\n      }"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Document",
+			"description": "",
+			"item": [
+				{
+					"name": "GET - Document",
+					"request": {
+						"url": "http://{{server}}:{{port}}/document/{{database}}/{{record-id}}/{{fetchPlan}}",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "GET - Document\n\nThis is a key way to retrieve data from the database, especially when combined with a <fetchplan>. Where a single result is required then the RID can be used to retrieve that single document.\n\nSyntax: http://<server>:[<port>]/document/<database>/<record-id>[/<fetchPlan>]\n\nWhere:\n\n<record-id> See Concepts: RecordID\n<fetchPlan> Optional, is the fetch plan used. 0 means the root record, -1 infinite depth, positive numbers is the depth level. Look at Fetching Strategies for more information.\nExample\n\nHTTP GET request: http://localhost:2480/document/demo/9:0\n\nHTTP response can be:\n\nHTTP Code 200, with the document in JSON format in the payload, such as:\n\n{\n\"_id\": \"9:0\",\n\"_ver\": 2,\n\"@class\": \"Profile\",\n\"nick\": \"GGaribaldi\",\n\"followings\": [],\n\"followers\": [],\n\"name\": \"Giuseppe\",\n\"surname\": \"Garibaldi\",\n\"location\": \"11:0\",\n\"invitedBy\": null,\n\"sex\": \"male\",\n\"online\": true\n}\nHTTP Code 404, if the document was not found\nThe example above can be extended to return all the edges and vertices beneath #9:0\n\nHTTP GET request: http://localhost:2480/document/demo/9:0/*:-1"
+					},
+					"response": []
+				},
+				{
+					"name": "HEAD - Document",
+					"request": {
+						"url": "http://{{server}}:{{port}}/document/{{database}}/{{record-id}}",
+						"method": "HEAD",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "HEAD - Document\n\nCheck if a document exists\n\nSyntax: http://<server>:[<port>]/document/<database>/<record-id>\n\nWhere:\n\n<record-id> See Concepts: RecordID\nExample\n\nHTTP HEAD request: http://localhost:2480/document/demo/9:0\n\u0001\nHTTP response can be:\n\nHTTP Code 204, if the document exists\nHTTP Code 404, if the document was not found\n"
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Document",
+					"request": {
+						"url": "http://{{server}}:{{port}}/document/{{database}}",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"@class\": \"Subjects\",\n    \"scode\": \"CPSC\",\n    \"stitle\": \"Computer Science\",\n    \"sfaculty\": \"Faculty of Science\",\n    \"surl\": \"https://courses.students.ubc.ca/cs/main?pname=subjarea&tname=subjareas&req=1&dept=CPSC\"\n}"
+						},
+						"description": "POST - Document\n\nCreate a new document. Returns the document with the new @rid assigned. Before 1.4.x the return was the @rid content only.\n\nSyntax: http://<server>:[<port>]/document/<database>\n\nExample\n\nHTTP POST request: http://localhost:2480/document/demo\n\n  content:\n  {\n    \"@class\": \"Profile\",\n    \"nick\": \"GGaribaldi\",\n    \"followings\": [],\n    \"followers\": [],\n    \"name\": \"Giuseppe\",\n    \"surname\": \"Garibaldi\",\n    \"location\": \"11:0\",\n    \"invitedBy\": null,\n    \"sex\": \"male\",\n    \"online\": true\n  }\nHTTP response, as the document created with the assigned RecordID as @rid:\n\n{\n  \"@rid\": \"#11:4456\",\n  \"@class\": \"Profile\",\n  \"nick\": \"GGaribaldi\",\n  \"followings\": [],\n  \"followers\": [],\n  \"name\": \"Giuseppe\",\n  \"surname\": \"Garibaldi\",\n  \"location\": \"11:0\",\n  \"invitedBy\": null,\n  \"sex\": \"male\",\n  \"online\": true\n}\n"
+					},
+					"response": []
+				},
+				{
+					"name": "PUT - Document",
+					"request": {
+						"url": "http://{{server}}:{{port}}/document/{{database}}/{{record-id}}?updateMode=partial",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sfaculty\": \"Faculty of Science\",\n    \"surl\": \"https://courses.students.ubc.ca/cs/main?pname=subjarea&tname=subjareas&req=1&dept=CHEM\"\n}"
+						},
+						"description": "PUT - Document\n\nUpdate a document. Remember to always pass the version to update. This prevent to update documents changed by other users (MVCC).\n\nSyntax: http://<server>:[<port>]/document/<database>[/<record-id>][?updateMode=full|partial] Where:\n\nupdateMode can be full (default) or partial. With partial mode only the delta of changes is sent, otherwise the entire document is replaced (full mode)\nExample\n\nHTTP PUT request: http://localhost:2480/document/demo/9:0\n\ncontent:\n{\n  \"@class\": \"Profile\",\n  \"@version\": 3,\n  \"nick\": \"GGaribaldi\",\n  \"followings\": [],\n  \"followers\": [],\n  \"name\": \"Giuseppe\",\n  \"online\": true\n}\nHTTP response, as the updated document with the updated @version field (Since v1.6):\n\ncontent:\n{\n  \"@class\": \"Profile\",\n  \"@version\": 4,\n  \"nick\": \"GGaribaldi\",\n  \"followings\": [],\n  \"followers\": [],\n  \"name\": \"Giuseppe\",\n  \"online\": true\n}\n"
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH - Document",
+					"request": {
+						"url": "http://{{server}}:{{port}}/document/{{database}}/{{record-id}}",
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"@version\": 6,\n    \"sfaculty\": \"Faculty of Science\"\n}"
+						},
+						"description": "PATCH - Document\n\nUpdate a document with only the difference to apply. Remember to always pass the version to update. This prevent to update documents changed by other users (MVCC).\n\nSyntax: http://<server>:[<port>]/document/<database>[/<record-id>] Where:\n\nExample\n\nThis is the document 9:0 before to apply the patch:\n\n{\n  \"@class\": \"Profile\",\n  \"@version\": 4,\n  \"name\": \"Jay\",\n  \"amount\": 10000\n}\nHTTP PATCH request: http://localhost:2480/document/demo/9:0\n\ncontent:\n{\n  \"@class\": \"Profile\",\n  \"@version\": 4,\n  \"amount\": 20000\n}\nHTTP response, as the updated document with the updated @version field (Since v1.6):\n\ncontent:\n{\n  \"@class\": \"Profile\",\n  \"@version\": 5,\n  \"name\": \"Jay\",\n  \"amount\": 20000\n}\n"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Document",
+					"request": {
+						"url": "http://{{server}}:{{port}}/document/{{database}}/{{record-id}}",
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "DELETE - Document\n\nDelete a document.\n\nSyntax: http://<server>:[<port>]/document/<database>/<record-id>\n\nExample\n\nHTTP DELETE request: http://localhost:2480/document/demo/9:0\n\nHTTP response: empty\n\n"
+					},
+					"response": []
+				},
+				{
+					"name": "HEAD - Document by Class",
+					"request": {
+						"url": "http://{{server}}:{{port}}/documentbyclass/{{database}}/{{class}}/{{record-position}}",
+						"method": "HEAD",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "HEAD - Document by Class\n\nCheck if a document exists\n\nSyntax: http://<server>:[<port>]/documentbyclass/<database>/<class-name>/<record-position>\n\nWhere:\n\n<class-name> is the name of the document's class\n<record-position> is the absolute position of the record inside the class' default cluster\nExample\n\nHTTP HEAD request: http://localhost:2480/documentbyclass/demo/Profile/0\n\nHTTP response can be:\n\nHTTP Code 204, if the document exists\nHTTP Code 404, if the document was not found\n"
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Document by Class",
+					"request": {
+						"url": "http://{{server}}:{{port}}/documentbyclass/{{database}}/{{class}}/{{record-position}}",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "GET Document by Class\n\nRetrieve a document by cluster name and record position.\n\nSyntax: http://<server>:[<port>]/documentbyclass/<database>/<class-name>/<record-position>[/fetchPlan]\n\nWhere:\n\n<class-name> is the name of the document's class\n<record-position> is the absolute position of the record inside the class' default cluster\n<fetchPlan> Optional, is the fetch plan used. 0 means the root record, -1 infinite depth, positive numbers is the depth level. Look at Fetching Strategies for more information.\nExample\n\nHTTP GET request: http://localhost:2480/documentbyclass/demo/Profile/0\n\nHTTP response:\n\n{\n  \"_id\": \"9:0\",\n  \"_ver\": 2,\n  \"@class\": \"Profile\",\n  \"nick\": \"GGaribaldi\",\n  \"followings\": [],\n  \"followers\": [],\n  \"name\": \"Giuseppe\",\n  \"surname\": \"Garibaldi\",\n  \"location\": \"11:0\",\n  \"invitedBy\": null,\n  \"sex\": \"male\",\n  \"online\": true\n}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Export",
+			"description": "",
+			"item": [
+				{
+					"name": "GET - Export",
+					"request": {
+						"url": "http://{{server}}:{{port}}/export/{{database}}",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "GET - Export\n\nExports a gzip file that contains the database JSON export.\n\nSyntax: http://:[]/export/\n\nHTTP GET request: http://localhost:2480/export/demo2 HTTP response: demo2.gzip file"
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Import",
+					"request": {
+						"url": "http://{{server}}:{{port}}/import/{{database}}",
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "POST - Import\n\nImports a database from an uploaded JSON text file.\n\nSyntax: http://<server>:[<port>]/import/<database>\n\nThe body of the HTTP call has to be the JSON of an exported DB (plain text). Multipart is not supported.\n\nImportant: Connect required: the connection with the selected database must be already established\n\nExample\n\nHTTP POST request: http://localhost:2480/import/ HTTP response: returns a JSON object containing the result text Success:\n\n{\n  \"responseText\": \"Database imported correctly\"\n}\n_Fail::\n\n{\n  \"responseText\": \"Error message\"\n}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Index",
+			"description": "",
+			"item": [
+				{
+					"name": "GET - Index",
+					"request": {
+						"url": "http://{{server}}:{{port}}/index/{{database}}/{{index-name}}/{{key}}",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "GET - Index\r\n\r\nRetrieve a record looking into the index.\r\n\r\nSyntax: http://<server>:[<port>]/index/<database>/<index-name>/<key>\r\n\r\nExample\r\n\r\nHTTP GET request: http://localhost:2480/index/demo/dictionary/test HTTP response:\r\n\r\n{\r\n  \"name\" : \"Jay\",\r\n  \"surname\" : \"Miner\"\r\n}"
+					},
+					"response": []
+				},
+				{
+					"name": "PUT - Index",
+					"request": {
+						"url": "http://{{server}}:{{port}}/index/{{database}}/{{index-name}}/{{key}}",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "  {\n    \"@class\": \"Subjects\",\n    \"surl\": \"https://courses.students.ubc.ca/cs/main?pname=subjarea&tname=subjareas&req=1&dept=CPSC\",\n    \"stitle\": \"Computer Science\",\n    \"scode\": \"CPSC\",\n    \"sfaculty\": \"Faculty of Science Fiction\"\n  }"
+						},
+						"description": "PUT - Index\r\n\r\nCreate or modify an index entry.\r\n\r\nSyntax: http://<server>:[<port>]/index/<database>/<index-name>/<key>\r\n\r\nExample\r\n\r\nHTTP PUT request: http://localhost:2480/index/demo/dictionary/test content: { \"name\" : \"Jay\", \"surname\" : \"Miner\" }\r\n\r\nHTTP response: No response."
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Index",
+					"request": {
+						"url": "http://{{server}}:{{port}}/index/{{database}}/{{index-name}}/{{key}}",
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "DELETE - Index\r\n\r\nRemove an index entry.\r\n\r\nSyntax: http://<server>:[<port>]/index/<database>/<index-name>/<key>\r\n\r\nExample\r\n\r\nHTTP DELETE request: http://localhost:2480/index/demo/dictionary/test HTTP response: No response."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Property",
+			"description": "",
+			"item": [
+				{
+					"name": "POST - Property",
+					"request": {
+						"url": "http://{{server}}:{{port}}/property/{{database}}/{{class}}/{{property-name}}/{{property-type}}",
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "POST - Property\n\nCreate one or more properties into a given class. Returns the number of properties of the class.\n\nSingle property creation\n\nSyntax: http://<server>:[<port>]/property/<database>/<class-name>/<property-name>/[<property-type>]\n\nCreates a property named <property-name> in <class-name>. If <property-type> is not specified the property will be created as STRING.\n\nMultiple property creation\n\nSyntax: http://<server>:[<port>]/property/<database>/<class-name>/\n\nRequires a JSON document post request content:\n\n{\n  \"fieldName\": {\n      \"propertyType\": \"<property-type>\"\n  },\n  \"fieldName\": {\n      \"propertyType\": \"LINK\",\n      \"linkedClass\": \"<linked-class>\"\n  },\n  \"fieldName\": {\n      \"propertyType\": \"<LINKMAP|LINKLIST|LINKSET>\",\n      \"linkedClass\": \"<linked-class>\"\n  },\n  \"fieldName\": {\n      \"propertyType\": \"<LINKMAP|LINKLIST|LINKSET>\",\n      \"linkedType\": \"<linked-type>\"\n  }\n}\nExample\n\nSingle property:\n\nString Property Example: HTTP POST request: http://localhost:2480/class/demo/simpleField HTTP response: 1\n\nType Property Example: HTTP POST request: http://localhost:2480/class/demo/dateField/DATE HTTP response: 1\n\nLink Property Example: HTTP POST request: http://localhost:2480/class/demo/linkField/LINK/Person HTTP response: 1\n\nMultiple properties: HTTP POST request: http://localhost:2480/class/demo/ HTTP POST content:\n\n{\n  \"name\": {\n      \"propertyType\": \"STRING\"\n  },\n  \"father\": {\n      \"propertyType\": \"LINK\",\n      \"linkedClass\": \"Person\"\n  },\n  \"addresses\": {\n      \"propertyType\": \"LINKMAP\",\n      \"linkedClass\": \"Address\"\n  },\n  \"examsRatings\": {\n      \"propertyType\": \"LINKMAP\",\n      \"linkedType\": \"INTEGER\"\n  }\n  \"events\": {\n      \"propertyType\": \"LINKLIST\",\n      \"linkedType\": \"DATE\"\n  }\n  \"family\": {\n      \"propertyType\": \"LINKLIST\",\n      \"linkedClass\": \"Person\"\n  }\n...\nHTTP response: 6\n\n"
+					},
+					"response": []
+				},
+				{
+					"name": "POST - MultipleProperties",
+					"request": {
+						"url": "http://{{server}}:{{port}}/property/{{database}}/{{class}}",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"scode\": {\n      \"propertyType\": \"STRING\"\n    },\n    \"cno\": {\n      \"propertyType\": \"STRING\"\n    },\n    \"sectnum\": {\n      \"propertyType\": \"STRING\"\n    },\n    \"activity\": {\n      \"propertyType\": \"STRING\"\n    },\n    \"sstatus\": {\n      \"propertyType\": \"STRING\"\n    },\n    \"term\": {\n      \"propertyType\": \"STRING\"\n    },\n    \"days\": {\n      \"propertyType\": \"STRING\"\n    },\n    \"starttime\": {\n      \"propertyType\": \"STRING\"\n    },\n    \"endtime\": {\n      \"propertyType\": \"STRING\"\n    },\n    \"instructor\": {\n      \"propertyType\": \"STRING\"\n    },\n    \"seurl\": {\n      \"propertyType\": \"STRING\"\n    },\n    \"seats_total\": {\n      \"propertyType\": \"SHORT\"\n    },\n    \"seats_general\": {\n      \"propertyType\": \"SHORT\"\n    },\n    \"seats_restricted\": {\n      \"propertyType\": \"SHORT\"\n    },\n    \"seats_registered\": {\n      \"propertyType\": \"SHORT\"\n    }\n}"
+						},
+						"description": "Multiple property creation\n\nSyntax: http://<server>:[<port>]/property/<database>/<class-name>/\n\nRequires a JSON document post request content:\n\n{\n  \"fieldName\": {\n      \"propertyType\": \"<property-type>\"\n  },\n  \"fieldName\": {\n      \"propertyType\": \"LINK\",\n      \"linkedClass\": \"<linked-class>\"\n  },\n  \"fieldName\": {\n      \"propertyType\": \"<LINKMAP|LINKLIST|LINKSET>\",\n      \"linkedClass\": \"<linked-class>\"\n  },\n  \"fieldName\": {\n      \"propertyType\": \"<LINKMAP|LINKLIST|LINKSET>\",\n      \"linkedType\": \"<linked-type>\"\n  }\n}\nExample\n\nSingle property:\n\nString Property Example: HTTP POST request: http://localhost:2480/class/demo/simpleField HTTP response: 1\n\nType Property Example: HTTP POST request: http://localhost:2480/class/demo/dateField/DATE HTTP response: 1\n\nLink Property Example: HTTP POST request: http://localhost:2480/class/demo/linkField/LINK/Person HTTP response: 1\n\nMultiple properties: HTTP POST request: http://localhost:2480/class/demo/"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Server",
+			"description": "",
+			"item": [
+				{
+					"name": "GET - Server",
+					"request": {
+						"url": "http://{{server}}:{{port}}/server",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "GET - Server\n\nRetrieve information about the connected OrientDB Server. Requires additional authentication to the server.\n\nSyntax: http://<server>:[<port>]/server\n\nExample\n\nHTTP GET request: http://localhost:2480/server HTTP response:\n\n{\n  \"connections\": [{\n    \"id\": \"4\",\n    \"id\": \"4\",\n    \"remoteAddress\": \"0:0:0:0:0:0:0:1:52504\",\n    \"db\": \"-\",\n    \"user\": \"-\",\n    \"protocol\": \"HTTP-DB\",\n    \"totalRequests\": \"1\",\n    \"commandInfo\": \"Server status\",\n    \"commandDetail\": \"-\",\n    \"lastCommandOn\": \"2010-05-26 05:08:58\",\n    \"lastCommandInfo\": \"-\",\n    \"lastCommandDetail\": \"-\",\n    \"lastExecutionTime\": \"0\",\n    \"totalWorkingTime\": \"0\",\n...\n"
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Server",
+					"request": {
+						"url": "http://{{server}}:{{port}}/server/{{setting-name}}/{{setting-value}}",
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "POST - Server\n\nChanges server configuration. Supported configuration are:\n\nany setting contained in OGlobalConfiguation class, by using the prefix configuration in setting-name\nlogging level, by using the prefix log in setting-name\nSyntax: http://<server>:[<port>]/server/<setting-name>/<setting-value>\n\nExample\n\nExample on changing the server log level to FINEST\n\nlocalhost:2480/server/log.console/FINEST\nExample on changing the default timeout for query to 10 seconds\n\nlocalhost:2480/server/configuration.command.timeout/10000"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GET - Connect",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"username": "admin",
+						"password": "admin",
+						"saveHelperData": true,
+						"showPassword": false
+					}
+				},
+				"url": "http://{{server}}:{{port}}/connect/{{database}}",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46YWRtaW4=",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": "Connect\n\nGET - Connect\n\nConnect to a remote server using basic authentication.\n\nSyntax: http://<server>:[<port>]/connect/<database>\n\nExample\n\nHTTP GET request: http://localhost:2480/connect/demo HTTP response: 204 if ok, otherwise 401."
+			},
+			"response": []
+		},
+		{
+			"name": "GET - Disconnect",
+			"request": {
+				"url": "http://{{server}}:{{port}}/disconnect",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": "Disconnect\n\nGET - Disconnect\n\nSyntax: http://<server>:[<port>]/disconnect\n\nExample\n\nHTTP GET request: http://localhost:2480/disconnect HTTP response: empty."
+			},
+			"response": []
+		},
+		{
+			"name": "GET - Query",
+			"request": {
+				"url": "http://{{server}}:{{port}}/query/{{database}}/{{language}}/{{query-text}}/{{limit}}/{{fetchPlan}}",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": "GET - Query\n\nExecute a query against the database. Query means only idempotent commands like SQL SELECT and TRAVERSE. Idempotent means the command is read-only and can't change the database. Remember that in IE6 the URL can be maximum of 2,083 characters. Other browsers supports longer URLs, but if you want to stay compatible with all limit to 2,083 characters.\n\nSyntax: http://<server>:[<port>]/query/<database>/<language>/<query-text>[/<limit>][/<fetchPlan>]\n\nWhere:\n\n<language> is the name of the language between those supported. OrientDB distribution comes with \"sql\" only. Gremlin language cannot be executed with query because it cannot guarantee to be idempotent. To execute Gremlin use command instead.\nquery-text is the text containing the query to execute\nlimit is the maximum number of record to return. Optional, default is 20\nfetchPlan is the fetching strategy to use. For more information look at Fetching Strategies. Optional, default is *:1 (1 depth level only)\nOther key points:\n\nTo use commands that change the database (non-idempotent), see the POST – Command section\nThe command-text included in the URL must be encoded as per a normal URL\nSee the SQL section for the type of queries that can be sent\nExample\n\nHTTP GET request: http://localhost:2480/query/demo/sql/select from Profile\n\nHTTP response:\n\n{ \"result\": [\n{\n  \"_id\": \"-3:1\",\n  \"_ver\": 0,\n  \"@class\": \"Address\",\n  \"type\": \"Residence\",\n  \"street\": \"Piazza di Spagna\",\n  \"city\": \"-4:0\"\n},\n{\n  \"_id\": \"-3:2\",\n  \"_ver\": 0,\n  \"@class\": \"Address\",\n  \"type\": \"Residence\",\n  \"street\": \"test\",\n  \"city\": \"-4:1\"\n}] }\nThe same query with the limit to maximum 20 results using the fetch plan *:-1 that means load all recursively:\n\nHTTP GET request: http://localhost:2480/query/demo/sql/select from Profile/20/*:-1"
+			},
+			"response": []
+		},
+		{
+			"name": "POST - Command",
+			"request": {
+				"url": "http://{{server}}:{{port}}/command/{{database}}/{{language}}/{{command-text}}/{{limit}}/{{fetchPlan}}",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": "POST - Command\n\nExecute a command against the database. Returns the records affected or the list of records for queries. Command executed via POST can be non-idempotent (look at Query).\n\nSyntax: http://<server>:[<port>]/command/<database>/<language>[/<command-text>[/limit[/<fetchPlan>]]]\n\nThe content can be <command-text> or starting from v2.2 a json containing the command and parameters:\n\nby parameter name: {\"command\":<command-text>, \"parameters\":{\"<param-name>\":<param-value>} }\nby parameter position: {\"command\":<command-text>, \"parameters\":[<param-value>] }\nWhere:\n\n<language> is the name of the language between those supported. OrientDB distribution comes with \"sql\" and GraphDB distribution has both \"sql\" and \"gremlin\"\ncommand-text is the text containing the command to execute\nlimit is the maximum number of record to return. Optional, default is 20\nfetchPlan is the fetching strategy to use. For more information look at Fetching Strategies. Optional, default is *:1 (1 depth level only)\nThe command-text can appear in either the URL or the content of the POST transmission. Where the command-text is included in the URL, it must be encoded as per normal URL encoding. By default the result is returned in JSON. To have the result in CSV, pass \"Accept: text/csv\" in HTTP Request.\n\nStarting from v2.2, the HTTP payload can be a JSON with both command to execute and parameters. Example:\n\nExecute a query passing parameters by name:\n\n{\n  \"command\": \"select from V where name = :name and city = :city\",\n  \"parameters\": {\n    \"name\": \"Luca\",\n    \"city\": \"Rome\"\n  }\n}\nExecute a query passing parameters by position:\n\n{\n  \"command\": \"select from V where name = ? and city = ?\",\n  \"parameters\": [ \"Luca\", \"Rome\" ]\n}\nRead the SQL section or the Gremlin introduction for the type of commands.\n\nExample\n\nHTTP POST request: http://localhost:2480/command/demo/sql content: update Profile set online = false\n\nHTTP response: 10\n\nOr the same:\n\nHTTP POST request: http://localhost:2480/command/demo/sql/update Profile set online = false\n\nHTTP response: 10\n\nExtract the user list in CSV format using curl\n\ncurl --user admin:admin --header \"Accept: text/csv\" -d \"select from ouser\" \"http://localhost:2480/command/GratefulDeadConcerts/sql\"\n"
+			},
+			"response": []
+		}
+	]
+}
